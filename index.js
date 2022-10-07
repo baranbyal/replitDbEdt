@@ -48,6 +48,42 @@ app.get("/get-client", function (req, res) {
     });
 });
 
+// Post API to update dancer
+app.post("/update", function (req, res) {
+    client.connect(err => {
+        if (err) throw err;
+        let query = {name:req.body.oldname, surname:req.body.oldsurname, telephone:req.body.oldtelephone, branch:req.body.oldbranch, attandance:req.body.oldattandance};
+        let newvalues = { $set: {name:req.body.name, surname:req.body.surname, telephone:req.body.telephone, branch:req.body.branch, attandance:req.body.attandance} };
+
+        client.db("drmdb").collection("dancers").updateOne(query, newvalues, function (err, res) {
+
+            if (err) throw err;
+            console.log("1 document updated");
+            res.render("update", { message: "Dancer Updated" , oldname: req.body.name, oldsurname: req.body.surname, oldtelephone: req.body.telephone, oldbranch: req.body.branch, oldattandance: req.body.attandance});
+        });
+    });
+});
+
+// Post API to delete dancer
+app.post("/delete", function (req, res) {
+    client.connect(err => {
+        if (err) throw err;
+        let query = {name:req.body.name, surname:req.body.surname, telephone:req.body.telephone, branch:req.body.branch, attandance:req.body.attandance};
+
+        client.db("drmdb").collection("dancers").deleteOne(query, function (err, obj) {
+            if (err) throw err;
+            console.log("1 document deleted");
+            res.send("Dancer ${req.body.name} deleted");
+        });
+    });
+});
+
+
+
+app.engine("pug",require("pug").__express);
+app.set("views",".");
+app.set("view engine","pug");
+
 const MongoClient = require("mongodb").MongoClient;
 const mongo_username = process.env.MONGO_USERNAME;
 const mongo_password = process.env.MONGO_PASSWORD;
