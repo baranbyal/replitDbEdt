@@ -34,6 +34,19 @@ http.listen(app.get("port"), function() {
   console.log("listening on port", app.get("port"));
 });
 
+app.get("/get", function(req, res) {
+    res.sendFile("/get.html", { root: "." });
+
+});
+
+app.get("/get-client", function (req, res) {
+    client.connect(err => {
+        client.db("drmdb").collection("dancers").findOne({ name: req.query.name }, function (err, result) {
+            if (err) throw err;
+            res.render("update", { oldname: result.name, oldsurname: result.surname, oldtelephone: result.telephone, oldbranch: result.branch, oldattandance: result.attandance });
+        });
+    });
+});
 
 const MongoClient = require("mongodb").MongoClient;
 const mongo_username = process.env.MONGO_USERNAME;
